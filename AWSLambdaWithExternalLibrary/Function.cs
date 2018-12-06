@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DomainCoreLibrary;
 
 using Amazon.Lambda.Core;
 
@@ -21,7 +22,21 @@ namespace AWSLambdaWithExternalLibrary
         /// <returns></returns>
         public string FunctionHandler(string input, ILambdaContext context)
         {
-            return input?.ToUpper();
+            double inpNum = Double.Parse(input);
+
+            Entity newEnt = new Entity();
+            newEnt.payload = inpNum;
+
+            Entity staticEnt = new Entity();
+            staticEnt.payload = 1.0;
+
+            Result res = Utility.add(newEnt, staticEnt);
+
+            double realRes = Utility.compute() * res.GetValue();
+
+            LambdaLogger.Log(Utility.compute().ToString() + "\n");
+
+            return realRes.ToString();
         }
     }
 }
